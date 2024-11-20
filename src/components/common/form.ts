@@ -37,7 +37,7 @@ export abstract class Form<T> extends Component<IFormValidation> {
 	/**
 	 * Устанавливает состояние кнопки отправки формы
 	 */
-	set isFormValid(isValid: boolean) {
+	set FormValid(isValid: boolean) {
 		this.submitButton.disabled = !isValid;
 	}
 
@@ -49,7 +49,7 @@ export abstract class Form<T> extends Component<IFormValidation> {
 	}
 
 	/**
-	 * Рендерит состояние формы.
+	 * Рендерит состояние формы
 	 */
 	render(state: Partial<T> & IFormValidation): HTMLFormElement {
 		const { valid, errors, ...fields } = state;
