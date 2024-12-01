@@ -2,6 +2,7 @@ import { Component } from '../base/component';
 import { IModal } from '../../types';
 import { IEvents } from '../base/events';
 import { ensureElement } from '../../utils/utils';
+import { MODAL_SELECTORS, MODAL_EVENTS, MODAL_ACTIVE_CLASS } from '../../utils/constants';
 
 export class Modal extends Component<IModal> {
 	protected closeButton: HTMLButtonElement;
@@ -11,8 +12,8 @@ export class Modal extends Component<IModal> {
 		super(container);
 
 		// Инициализация элементов
-		this.closeButton = ensureElement<HTMLButtonElement>('.modal__close', container);
-		this.modalContent = ensureElement<HTMLElement>('.modal__content', container);
+		this.closeButton = ensureElement<HTMLButtonElement>(MODAL_SELECTORS.closeButton, container);
+		this.modalContent = ensureElement<HTMLElement>(MODAL_SELECTORS.modalContent, container);
 
 		// Обработка событий
 		this.closeButton.addEventListener('click', this.close.bind(this));
@@ -35,17 +36,17 @@ export class Modal extends Component<IModal> {
 	 * Открывает модальное окно
 	 */
 	open(): void {
-		this.container.classList.add('modal_active');
-		this.events.emit('modal:open');
+		this.container.classList.add(MODAL_ACTIVE_CLASS);
+		this.events.emit(MODAL_EVENTS.open);
 	}
 
 	/**
 	 * Закрывает модальное окно
 	 */
 	close(): void {
-		this.container.classList.remove('modal_active');
+		this.container.classList.remove(MODAL_ACTIVE_CLASS);
 		this.content = null; // Очистка содержимого
-		this.events.emit('modal:close');
+		this.events.emit(MODAL_EVENTS.close);
 	}
 
 	/**

@@ -12,7 +12,12 @@ export type OrderPaymentError = Partial<Record<keyof IOrderPayment, string>>;
 /** Ошибки для контактной информации заказа */
 export type OrderContactError = Partial<Record<keyof IOrderContacts, string>>;
 
-export type ApiResponse<T> = { total: number; items: T[]}
+export interface ApiResponse<T> {
+	total: number;
+	items: T[];
+}
+
+export type FormName = 'order' | 'contacts';
 
 /** Интерфейс для описания продукта */
 export interface IProduct {
@@ -45,6 +50,8 @@ export interface IOrderContacts {
 	email: string;
 	phone: string;
 }
+
+export interface IForm extends IOrderPayment, IOrderContacts {}
 
 /** Интерфейс для заказа */
 export interface IOrder extends IOrderContacts, IOrderPayment {

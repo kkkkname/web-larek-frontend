@@ -2,6 +2,7 @@ import { Component } from '../base/component';
 import { ICard, ICardAction, ProductCategory } from '../../types';
 import { currency, ensureElement } from '../../utils/utils';
 import { settings } from '../../utils/constants';
+import { CARD_SELECTORS, CARD_BUTTON_TEXT, UNKNOWN_CATEGORY } from '../../utils/constants';
 
 export class Card extends Component<ICard> {
 	protected _title: HTMLElement;
@@ -15,13 +16,13 @@ export class Card extends Component<ICard> {
 	constructor(container: HTMLElement, actions?: ICardAction) {
 		super(container);
 		// Находим и инициализируем все необходимые элементы
-		this._title = ensureElement<HTMLElement>('.card__title', container);
-		this._price = ensureElement<HTMLElement>('.card__price', container);
-		this._image = container.querySelector('.card__image') as HTMLImageElement;
-		this._category = container.querySelector('.card__category') as HTMLElement;
-		this._button = container.querySelector('.card__button') as HTMLButtonElement;
-		this._description = container.querySelector('.card__text') as HTMLElement;
-		this._index = container.querySelector('.basket__item-index') as HTMLElement;
+		this._title = ensureElement<HTMLElement>(CARD_SELECTORS.title, container);
+		this._price = ensureElement<HTMLElement>(CARD_SELECTORS.price, container);
+		this._image = container.querySelector(CARD_SELECTORS.image) as HTMLImageElement;
+		this._category = container.querySelector(CARD_SELECTORS.category) as HTMLElement;
+		this._button = container.querySelector(CARD_SELECTORS.button) as HTMLButtonElement;
+		this._description = container.querySelector(CARD_SELECTORS.description) as HTMLElement;
+		this._index = container.querySelector(CARD_SELECTORS.index) as HTMLElement;
 
 		// Если передан обработчик для клика, привязываем его
 		if (actions?.onClick) {
@@ -35,7 +36,7 @@ export class Card extends Component<ICard> {
 
 	// Метод для получения категории в виде класса
 	private getCategory(value: ProductCategory): string {
-		const category = settings[value] || 'unknown';
+		const category = settings[value] || UNKNOWN_CATEGORY;
 		return 'card__category_' + category;
 	}
 
@@ -76,7 +77,7 @@ export class Card extends Component<ICard> {
 	// Устанавливаем состояние кнопки
 	set inBasket(isInBasket: boolean) {
 		if (this._button) {
-			this._button.textContent = isInBasket ? 'Убрать' : 'В корзину'; // Меняем текст кнопки в зависимости от состояния
+			this._button.textContent = isInBasket ? CARD_BUTTON_TEXT.inBasket : CARD_BUTTON_TEXT.addToBasket; // Меняем текст кнопки в зависимости от состояния
 		}
 	}
 

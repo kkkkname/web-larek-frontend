@@ -1,7 +1,7 @@
 import {
+	IForm,
 	IOrder,
-	IOrderContacts,
-	IOrderPayment,
+	FormName,
 	IProduct,
 	IState,
 	OrderContactError,
@@ -66,7 +66,7 @@ export class AppState extends Model<IState> {
 		return this.basket.reduce((total, item) => total + item.price, 0);
 	}
 
-	setField(field: keyof IOrderPayment | keyof IOrderContacts, value: string): void {
+	setField(field: keyof IForm, value: string): void {
 		this.order[field] = value;
 
 		if (this.validate('order')) {
@@ -78,7 +78,7 @@ export class AppState extends Model<IState> {
 		}
 	}
 
-	validate(formType: 'order' | 'contacts'): boolean {
+	validate(formType: FormName): boolean {
 		const errors = formType === 'order' ? this.setOrderErrors() : this.setContactsErrors();
 		this.events.emit(`${formType}FormErrors:change`, errors);
 		return Object.keys(errors).length === 0;

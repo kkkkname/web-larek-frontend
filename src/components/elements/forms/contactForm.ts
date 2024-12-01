@@ -2,18 +2,18 @@ import { Form } from '../../common/form';
 import { IFormValidation, IOrderContacts } from '../../../types';
 import { IEvents } from '../../base/events';
 
-export class Contaсts extends Form<IOrderContacts> {
-	constructor(formElement: HTMLFormElement, events: IEvents) {
-		super(formElement, events);
+export class Contacts extends Form<IOrderContacts> {
+	constructor(container: HTMLFormElement, events: IEvents) {
+		super(container, events);
 	}
 
 	set email(value: string) {
-		(this.formElement.elements.namedItem('email') as HTMLInputElement).value =
+		(this.container.elements.namedItem('email') as HTMLInputElement).value =
 			value;
 	}
 
 	set phone(value: string) {
-		(this.formElement.elements.namedItem('phone') as HTMLInputElement).value =
+		(this.container.elements.namedItem('phone') as HTMLInputElement).value =
 			value;
 	}
 
@@ -30,10 +30,10 @@ export class Contaсts extends Form<IOrderContacts> {
 		this.email = email || '';
 		this.phone = phone || '';
 
-		this.FormValid = valid;
-		this.errorMessage = errors ? errors.join('; ') : '';
+		this.valid = valid;
+		this.errors = errors ? errors.join(`; `) : '';
 
-		return this.formElement;
+		return this.container;
 	}
 
 }

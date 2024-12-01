@@ -2,68 +2,53 @@ import { IFormValidation } from '../../types';
 import { Component } from '../base/component';
 import { IEvents } from '../base/events';
 import { ensureElement } from '../../utils/utils';
-
+import { FORM_SELECTORS, FORM_EVENTS, FORM_EVENT_PREFIX } from '../../utils/constants';
 
 export abstract class Form<T> extends Component<IFormValidation> {
-	protected submitButton: HTMLButtonElement;
-	protected errorContainer: HTMLElement;
+	protected _submit: HTMLButtonElement;
+	protected _errors: HTMLElement;
 
-	constructor(protected formElement: HTMLFormElement, protected events: IEvents) {
-		super(formElement);
+	constructor(protected container: HTMLFormElement, protected events: IEvents) {
+		super(container);
 
 		// Инициализация элементов
-		this.submitButton = ensureElement<HTMLButtonElement>('button[type=submit]', this.formElement);
-		this.errorContainer = ensureElement<HTMLElement>('.form_errors', this.formElement);
+		this._submit = ensureElement<HTMLButtonElement>(FORM_SELECTORS.submitButton, this.container);
+		this._errors = ensureElement<HTMLElement>(FORM_SELECTORS.errorContainer, this.container);
 
 		// Подписка на события ввода
-		this.formElement.addEventListener('input', this.handleInput.bind(this));
+		this.container.addEventListener(FORM_EVENTS.input, (e: Event) => {
+			const target = e.target as HTMLInputElement;
+			const field = target.name as keyof T;
+			const value = target.value;
+			this.onInputChange(field, value);
+		});
+
+		this.container.addEventListener(FORM_EVENTS.submit, (e: Event) => {
+			e.preventDefault();
+			this.events.emit(`${this.container.name}${FORM_EVENT_PREFIX}`);
+		});
 	}
 
-	/**
-	 * Обработчик событий ввода
-	 */
-	private handleInput(event: Event): void {
-		event.preventDefault();
-		this.events.emit(`${this.formElement.name}:submit`);
+	protected onInputChange(field: keyof T, value: string) {
+		this.events.emit(`${this.container.name}.${String(field)}:change`, {
+			field, value
+		});
 	}
 
-	/**
-	 * Обновление значения поля ввода
-	 */
-	protected updateField(field: keyof T, value: string): void {
-		this.events.emit(`${this.formElement.name}.${String(field)}:change`, { field, value });
+	set valid(value: boolean) {
+		this._submit.disabled = !value;
 	}
 
-	/**
-	 * Устанавливает состояние кнопки отправки формы
-	 */
-	set FormValid(isValid: boolean) {
-		this.submitButton.disabled = !isValid;
+	set errors(value: string) {
+		this.setText(this._errors, value);
 	}
 
-	/**
-	 * Отображает сообщение об ошибке в форме
-	 */
-	set errorMessage(message: string) {
-		this.setText(this.errorContainer, message);
-	}
-
-	/**
-	 * Рендерит состояние формы
-	 */
-	render(state: Partial<T> & IFormValidation): HTMLFormElement {
-		const { valid, errors, ...fields } = state;
-
-		// Обновление состояния в базовом компоненте
+	render(state: Partial<T> & IFormValidation) {
+		const { valid, errors, ...inputs } = state;
 		super.render({ valid, errors });
-
-		// Присваивание значений полям формы
-		Object.assign(this, fields);
-		return this.formElement;
+		Object.assign(this, inputs);
+		return this.container;
 	}
 
-	/**
-	 * Очищает значения полей формы.
-	 */
 	abstract clearFields(): void;
 }
